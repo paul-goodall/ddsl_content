@@ -1,0 +1,216 @@
+! Color subroutines
+
+shade_gray_palette_fade = 0.4
+
+sub color_range_horizontal zmin zmax zstep palette$ width height format$ pixels
+! draws a horizontal color range
+   default zstep   1
+   default palette "color"
+   default width   xg(xgmax)-xg(xgmin)
+   default height  0.25
+   default format  "fix 0"
+   default pixels  -1
+   if pixels = -1 then
+      pixels = (zmax-zmin)/zstep
+   end if
+   begin box name cmap
+      if palette$ = "gray" then
+         colormap "x" 0 1 0 1 pixels 1 width height
+      else if palette$ = "color" then
+         colormap "x" 0 1 0 1 pixels 1 width height color
+      else
+         colormap "x" 0 1 0 1 pixels 1 width height palette palette$
+      end if
+   end box
+   set just tc
+   local xp = zmin
+   while xp <= zmax
+      amove pointx(cmap.lc)+(xp-zmin)/(zmax-zmin)*width pointy(cmap.bc)
+      rline 0 -height/3; rmove 0 -height/3; write format$(xp, format$)
+      xp = xp + zstep
+   next
+end sub
+
+sub color_range_vertical zmin zmax zstep palette$ width height format$ pixels
+! draws a vertical color range
+   default zstep   1
+   default palette "color"
+   default width   0.25
+   default height  yg(ygmax)-yg(ygmin)
+   default format  "fix 0"
+   default pixels  -1
+   if pixels = -1 then
+      pixels = (zmax-zmin)/zstep
+   end if
+   begin box name cmap
+      if palette$ = "gray" then
+         colormap "y" 0 1 0 1 1 pixels width height
+      else if palette$ = "color" then
+         colormap "y" 0 1 0 1 1 pixels width height color
+      else
+         colormap "y" 0 1 0 1 1 pixels width height palette palette$
+      end if
+   end box
+   set just lc
+   local xp = zmin
+   while xp <= zmax
+      amove pointx(cmap.rc) pointy(cmap.bc)+(xp-zmin)/(zmax-zmin)*height
+      rline width/3 0; rmove width/3 0; write format$(xp, format$)
+      xp = xp + zstep
+   next
+end sub
+
+sub palette_redblue z
+! a custom palette ranging from blue over white to red
+   local r = 0
+   local g = 0
+   local b = 0
+   ! RED
+   if (z > 0.25) and (z <= 0.50) then r = (z-0.25)*4
+   if (z > 0.50) and (z <= 0.75) then r = 1
+   if (z > 0.75)                 then r = 1-(123/255)*4*(z-0.75)
+   ! GREEN
+   if (z > 0.25) and (z <= 0.50) then g = (z-0.25)*4
+   if (z > 0.50) and (z <= 0.75) then g = 1-4*(z-0.5)
+   if (z > 0.75)                 then g = 0
+   ! BLUE
+   if (z <= 0.25)                 then b = 132/255+(123/255)*4*z
+   if (z >  0.25) and (z <= 0.50) then b = 1
+   if (z >  0.50) and (z <= 0.75) then b = 1-4*(z-0.5)
+   if (z >  0.75)                 then b = 0
+   return rgb(r,g,b)
+end sub
+
+sub set_shade_gray_palette_fade fade
+	shade_gray_palette_fade = fade
+end sub
+
+sub sgp_color z x
+  local y = shade_gray_palette_fade ! set to 0 to fade completely white, 1 no fade at all
+  return (z*(1-y)+y)*(x/255-1)+1 ! the final +1 hard codes this to fade to white
+end sub
+
+sub shade_gray_palette z r g b
+  ! r, g, b is the color of the gradient which will fade towards white
+  return rgb(sgp_color(z,r), sgp_color(z,g), sgp_color(z,b))
+end sub
+
+
+
+sub palette_rainbow z
+! a custom palette ranging from blue over white to red
+   local r = 0
+   local g = 0
+   local b = 0
+
+pi = 3.141592654
+
+r1 = 104/255
+r2 = 119/255
+r3 = 134/255
+r4 = 164/255  
+
+g1 = 30/255
+g2 = 80/255
+g3 = 130/255
+g4 = 180/255
+g5 = 220/255
+g6 = 270/255
+
+b1 = 30/255
+b2 = 75/255
+b3 = 105/255
+b4 = 195/255  
+b5 = 220/255  
+
+   ! RED
+   if (z <= r1) then r = 0.0
+   if (z > r1)  then r = 0.5 - 0.5*sin(pi*(z-r1)/(r3-r1)+0.5*pi)
+!   if (z > r1) and (z <= r2) then r = 0.5 - 0.5*sin(pi*(z-r1)/(r3-r1)+0.5*pi)
+!   if (z > r2) and (z <= r3) then r = 1.0
+   if (z > r3) and (z <= r4) then r = 0.99411 + 0.00588*cos(2*pi*((z-r3)/(r4-r3)))
+   if (z > r4) then r = 1.0
+
+   ! GREEN
+   if (z <= g1) then g = 0.0
+!   if (z > g1) and (z <= g2) then g = sin(2*pi*(z-g1)/(200/255))
+   if (z > g1) then g = sin(2*pi*(z-g1)/(200/255))
+!   if (z > g2) and (z <= g3) then g = 1.0
+   if (z > g2) then g = 1.0
+!   if (z > g3) and (z <= g4) then g = sin(2*pi*((z-g3)/(200/255))+0.5*pi)
+   if (z > g3) then g = sin(2*pi*((z-g3)/(200/255))+0.5*pi)
+!   if (z > g4) and (z <= g5) then g = 0.0
+   if (z > g4) then g = 0.0
+   if (z > g5) then g = sin(2*pi*(z-g5)/(200/255))
+   if (z > g6) then g = 1.0
+
+   ! BLUE
+   if (z <= b1) then b = 0.5 - 0.5*sin(pi*(z-b1)/(b1)-0.5*pi)
+!   if (z > b1) and (z <= b2) then b = 1.0
+   if (z > b1) then b = 1.0
+!   if (z > b2) and (z <= b3) then b = sin(2*pi*((z-b2)/(120/255))+0.5*pi)
+   if (z > b2) then b = sin(2*pi*((z-b2)/(120/255))+0.5*pi)
+!   if (z > b3) and (z <= b4) then b = 0.0
+   if (z > b3) then b = 0.0
+!   if (z > b4) and (z <= b5) then b = sin(2*pi*((z-b4)/(120/255)))
+   if (z > b4) then b = sin(2*pi*((z-b4)/(120/255)))
+   if (z > b5) then b = 1.0
+
+   return rgb(r,g,b)
+end sub
+
+
+sub palette_rainbow2 z
+! a custom palette ranging from blue over white to red
+   local r = 0
+   local g = 0
+   local b = 0
+
+pi = 3.141592654
+
+r1 = 104/255
+r2 = 119/255
+r3 = 134/255
+r4 = 164/255  
+
+g1 = 30/255
+g2 = 80/255
+g3 = 130/255
+g4 = 180/255
+g5 = 220/255
+g6 = 270/255
+
+b1 = 30/255
+b2 = 75/255
+b3 = 105/255
+b4 = 195/255  
+b5 = 220/255  
+
+! RED
+   if (z <= r1) then r = 0.0
+   if (z > r1)  then r = 0.5 - 0.5*sin(pi*(z-r1)/(r3-r1)+0.5*pi)
+   if (z > r3) and (z <= r4) then r = 0.99411 + 0.00588*cos(2*pi*((z-r3)/(r4-r3)))
+   if (z > r4) then r = 1.0
+
+! GREEN
+   if (z <= g1) then g = 0.0
+   if (z > g1) then g = sin(2*pi*(z-g1)/(200/255))
+   if (z > g2) then g = 1.0
+   if (z > g3) then g = sin(2*pi*((z-g3)/(200/255))+0.5*pi)
+   if (z > g4) then g = 0.0
+   if (z > g5) then g = sin(2*pi*(z-g5)/(200/255))
+   if (z > g6) then g = 1.0
+
+! BLUE
+   if (z <= b1) then b = 0.5 - 0.5*sin(pi*(z-b1)/(b1)-0.5*pi)
+   if (z > b1) then b = 1.0
+   if (z > b2) then b = sin(2*pi*((z-b2)/(120/255))+0.5*pi)
+   if (z > b3) then b = 0.0
+   if (z > b4) then b = sin(2*pi*((z-b4)/(120/255)))
+   if (z > b5) then b = 1.0
+
+   return rgb(r,g,b)
+end sub
+
+
+
