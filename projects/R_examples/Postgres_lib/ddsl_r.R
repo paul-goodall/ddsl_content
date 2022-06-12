@@ -1,5 +1,5 @@
 # ==============================================
-my_library_path <- "/home/rstudio/data/R_libs"
+my_library_path <- "/home/rstudio/system_data/R_libs"
 system(paste0("mkdir -p ", my_library_path))
 .libPaths(my_library_path)
 # ==============================================

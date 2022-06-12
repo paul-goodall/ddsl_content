@@ -1,4 +1,4 @@
-setwd("/Volumes/Abyss/rstudio/projects/R_examples/Postgres_lib")
+setwd("/Volumes/Abyss/rstudio/ddsl_content/projects/R_examples/Postgres_lib")
 source("ddsl_r.R")
 
 # =============================
@@ -10,21 +10,37 @@ dbpass = "password"
 # =============================
 
 con <- ddsl_postgresql_con(dbname, dbhost, dbport, dbuser, dbpass)
+dbListTables(con)
+
+ddsl_lib("tidyverse")
+ddsl_lib("data.table")
+ddsl_lib("R.utils")
+
+nyc_taxi_data <- as_tibble(fread("nyc_taxi_data_small.csv.gz", verbose=F, showProgress=T))
+head(nyc_taxi_data)
 
 
-nyc_taxi_data <- readRDS("nyc_taxi_data_small_clean_easy.rds")
+
+nyc_taxi_data <- readRDS("../R_postgres_example/nyc_taxi_data_small_clean_easy.rds")
 summary(nyc_taxi_data)
-nyc_taxi_data_df <- as.data.frame(nyc_taxi_data)
-dbWriteTable(con, name="nyc_taxi_data", value=nyc_taxi_data_df)
+
+dbWriteTable(con, name="nyc_taxi_data", value=nyc_taxi_data)
 
 
-# Long-winded way of showing tables in PGres
-df <- dbGetQuery(con, "SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';")
+df <- dbGetQuery(con, "SELECT * FROM nyc_taxi_data")
 df
 
-df <- dbGetQuery(con, "SELECT count(*) as nn FROM nyc_taxi_data")
-df
+dbListFields(con, "nyc_taxi_data")
 
+qry <- "SELECT
+*
+FROM
+information_schema.columns
+WHERE
+table_schema = 'public' AND 
+table_name = 'nyc_taxi_data'
+"
+df2<- dbGetQuery(con, qry)
 
 
 
