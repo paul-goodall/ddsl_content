@@ -25,6 +25,9 @@ unzip my_dataset_name.zip -d data/my_dataset_name/;
 rm my_dataset_name.zip
 "
 
+# Look at these digital boundaries!
+# https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files
+
 ## Download Australian boundaries data:
 my_data_url     <- "https://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest"
 my_dataset_name <- "aus_country_boundaries"
