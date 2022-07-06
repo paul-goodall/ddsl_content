@@ -6,7 +6,7 @@ css: "gle_style.css"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("Rmarkdown_gle_engine.R")
+source("https://raw.githubusercontent.com/paul-goodall/ddsl_content/main/projects/gle_examples/Rmarkdown_GLE/Rmarkdown_gle_engine.R")
 setwd("/Volumes/Abyss/ddsl/ddsl_content/projects/gle_examples/Rmarkdown_GLE")
 Sys.setenv(gle_path="/usr/bin/gle")
 ```
