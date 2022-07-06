@@ -1,0 +1,8 @@
+size 12 5
+set background "clear"
+amove 1 1
+box 2 2 fill cyan
+amove 4 3
+text \tex{\huge where is $\frac{\alpha}{\beta}$ at}
+amove 10 2
+circle 1 fill magenta

@@ -1,0 +1,7 @@
+size 12 5
+amove 1 1
+box 2 2 fill red
+amove 4 3
+text \tex{\huge where is $\frac{\alpha}{\beta}$ at}
+amove 10 2
+circle 1 fill blue

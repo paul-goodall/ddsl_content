@@ -1,0 +1,123 @@
+---
+title: "GLE"
+output: html_document
+css: "gle_style.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("Rmarkdown_gle_engine.R")
+setwd("/Volumes/Abyss/ddsl/ddsl_content/projects/gle_examples/Rmarkdown_GLE")
+Sys.setenv(gle_path="/usr/bin/gle")
+```
+
+<br/>
+
+```{gle image1}
+size 12 5
+amove 1 1
+box 2 2 fill red
+amove 4 3
+text \tex{\huge where is $\frac{\alpha}{\beta}$ at}
+amove 10 2
+circle 1 fill blue
+```
+
+
+```{gle image2, gle_options="-transparent -resolution 200", chunk_titles="on-on-on"}
+size 12 5
+set background "clear"
+amove 1 1
+box 2 2 fill cyan
+amove 4 3
+text \tex{\huge where is $\frac{\alpha}{\beta}$ at}
+amove 10 2
+circle 1 fill magenta
+```
+
+
+```{r, cache=T}
+# R download some files if not present:
+if(!file.exists("fitz.dat"))  system("wget https://glx.sourceforge.io/examples/3dplots/fitz.dat")
+if(!file.exists("volcano.z")) system("wget https://glx.sourceforge.io/examples/3dplots/volcano.z")
+if(!file.exists("color.gle")) system("wget https://glx.sourceforge.io/subroutines/color.gle")
+```
+<br/>
+
+If using data-files with GLE in Rmarkdown, you need to specify the complete path to the files, as in the following examples:
+
+```{gle volcano, gle_options="-transparent -resolution 200",}
+size 16 8
+
+include "color.gle"
+
+! draw left graph
+amove 0 0
+begin graph
+   size 8 8
+   title "Auckland's Maunga Whau Volcano"
+   colormap "/Volumes/Abyss/ddsl/ddsl_content/projects/gle_examples/Rmarkdown_GLE/volcano.z" 100 100 palette palette_blue_white_red
+end graph
+
+! define zoom rectangle on left graph
+zx0 = 1; zy0 = 4
+zx1 = 8; zy1 = 12
+
+! draw zoom rectangle in yellow
+gsave
+set color yellow lwidth 0.1
+amove xg(zx0) yg(zy0)
+box xg(zx1)-xg(zx0) yg(zy1)-yg(zy0)
+grestore
+
+! draw right graph
+amove 7 0
+begin graph
+   size 8 8
+   title "Zoom on ("+num$(zx0)+","+num$(zy0)+") x ("+num$(zx1)+","+num$(zy1)+")"
+   xaxis min zx0 max zx1
+   yaxis min zy0 max zy1
+   colormap "/Volumes/Abyss/ddsl/ddsl_content/projects/gle_examples/Rmarkdown_GLE/volcano.z" 100 100 palette palette_blue_white_red
+end graph
+
+! draw vertical color range
+amove 14.5 yg(ygmin)
+color_range_vertical zmin 0 zmax 180 zstep 20 palette palette_blue_white_red
+```
+
+
+```{gle surface, gle_options="-resolution 200",}
+size 7 7
+
+set font texcmr
+
+begin fitz
+   data "/Volumes/Abyss/ddsl/ddsl_content/projects/gle_examples/Rmarkdown_GLE/fitz.dat"
+   x from 0 to 5 step 0.2
+   y from 0 to 5 step 0.2
+   ncontour 6
+end fitz
+
+
+begin object fitz
+   begin surface
+      size 8 8
+      data "/Volumes/Abyss/ddsl/ddsl_content/projects/gle_examples/Rmarkdown_GLE/fitz.z"
+      top color blue
+      xaxis min 0 max 5 step 1 hei .25
+      yaxis min 0 max 5 step 1 hei .25
+      zaxis step .5 hei .25
+      zaxis min 0 max 2.5
+      points "/Volumes/Abyss/ddsl/ddsl_content/projects/gle_examples/Rmarkdown_GLE/fitz.dat"
+      droplines lstyle 1
+      marker circle
+      view 2.5 3 .3
+   end surface
+end object
+
+amove pagewidth()/2 pageheight()/2
+draw fitz.cc
+```
+
+
+

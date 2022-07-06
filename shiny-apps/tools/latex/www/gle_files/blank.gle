@@ -1,7 +1,0 @@
-page_x = 10
-page_y = 5
-
-size page_x page_y
-
-amove 5 2
-box 3 1 fill red

@@ -1,9 +1,0 @@
-preamble: 6
-\documentclass{article}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage[dvips]{graphicx}
-\usepackage{epsfig}
-\usepackage{txfonts}
-\usepackage{color}
-0.172725 0.240581 0.277593 0.308437 0.345449 0.413305 0.493499 0.592198 0.715573 0.857454
